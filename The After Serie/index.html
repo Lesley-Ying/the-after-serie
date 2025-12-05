@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Artwork Bounce Gallery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #f7f7f7;
+    }
+    #p5-canvas-container {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <div id="p5-canvas-container"></div>
+  
+  <script>
+let photos = [];
+let bg = 255;                    
+let backgroundDead = false;     
+let trailAlpha = 50;             
+
+function preload() {
+  photos.push(new PhotoBall(loadImage("assets/barbara1.jpg"), "Barbara #1", 100, 100, "barbara1.html"));
+  photos.push(new PhotoBall(loadImage("assets/barbara2.jpg"), "Barbara #2", 90, 130, "barbara2.html"));
+  photos.push(new PhotoBall(loadImage("assets/sherrie levine.jpg"), "Sherrie Levine", 80, 110, "sherrie levine.html"));
+  photos.push(new PhotoBall(loadImage("assets/wangguangyi2.jpg"), "Wang Guangyi", 130, 80, "wangguangyi.html"));
+  photos.push(new PhotoBall(loadImage("assets/jeff koons.jpg"), "Jeff Koons", 155, 90, "jeff koons.html"));
+}
+
+function setup() {
+  let canvas = createCanvas(windowWidth, windowHeight);
+  canvas.parent('p5-canvas-container');
+  noStroke();
+  for (let p of photos) {
+    p.initPosition();
+  }
+}
+
+function draw() {
+  
+  fill(bg, bg, bg, trailAlpha);
+  rect(0, 0, width, height);
+
+  for (let p of photos) {
+    if (p.alpha > 0) {
+      p.update();
+      p.displaySmall();
+    }
+  }
+
+  updateCursor();
+}
+
+function mousePressed() {
+ 
+  for (let p of photos) {
+    if (p.isClicked(mouseX, mouseY)) {
+      
+      bg = 255;
+      backgroundDead = false;
+
+      
+      window.location.href = p.link;
+      break;
+    }
+  }
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+
+function updateCursor() {
+  let hover = false;
+  for (let p of photos) {
+    if (p.isHover(mouseX, mouseY)) { hover = true; break; }
+  }
+  hover ? cursor(HAND) : cursor(ARROW);
+}
+
+
+class PhotoBall {
+  constructor(img, caption, w, h, link) {
+    this.img = img;
+    this.caption = caption;
+    this.baseW = w;
+    this.baseH = h;
+    this.w = w;
+    this.h = h;
+    this.link = link;
+
+    this.x = 0;
+    this.y = 0;
+    this.vx = random(-4, 4);
+    this.vy = random(-4, 4);
+
+    
+    this.alpha = 255;
+    this.fadeSpeed = 0.35; 
+
+    // scale 呼吸
+    this.scaleT = random(1000);
+    this.scaleSpeed = 0.06; 
+    this.scaleMin = 0.85;
+    this.scaleMax = 1.25;
+  }
+
+  initPosition() {
+    this.x = random(width - this.w);
+    this.y = random(height - this.h);
+  }
+
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+
+    let hit = false;
+
+    if (this.x < 0) {
+      this.x = 0;
+      this.vx *= -1;
+      hit = true;
+    } else if (this.x + this.w > width) {
+      this.x = width - this.w;
+      this.vx *= -1;
+      hit = true;
+    }
+
+    if (this.y < 0) {
+      this.y = 0;
+      this.vy *= -1;
+      hit = true;
+    } else if (this.y + this.h > height) {
+      this.y = height - this.h;
+      this.vy *= -1;
+      hit = true;
+    }
+
+    
+    if (hit && !backgroundDead) {
+      bg = max(0, bg - 6); 
+      if (bg <= 0) {
+        bg = 0;
+        backgroundDead = true;
+      }
+    }
+
+    
+    this.scaleT += this.scaleSpeed;
+    let s = map(sin(this.scaleT), -1, 1, this.scaleMin, this.scaleMax);
+    this.w = this.baseW * s;
+    this.h = this.baseH * s;
+
+   
+    this.alpha = max(0, this.alpha - this.fadeSpeed);
+  }
+
+  displaySmall() {
+    push();
+    tint(255, this.alpha);
+    image(this.img, this.x, this.y, this.w, this.h);
+    noTint();
+    pop();
+  }
+
+  isHover(mx, my) {
+    return mx > this.x && mx < this.x + this.w && my > this.y && my < this.y + this.h;
+  }
+
+  isClicked(mx, my) {
+    if (this.isHover(mx, my)) {
+     
+      this.alpha = 255;
+      return true;
+    }
+    return false;
+  }
+}
+
+
+  </script>
+</body>
+</html>
