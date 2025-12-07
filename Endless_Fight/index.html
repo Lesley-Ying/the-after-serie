@@ -24,13 +24,13 @@
 let photos = [];
 let bg = 255;                    
 let backgroundDead = false;     
-let trailAlpha = 50;             
+let trailAlpha = 40;             
 
 function preload() {
   photos.push(new PhotoBall(loadImage("assets/barbara1.jpg"), "Barbara #1", 100, 100, "barbara1.html"));
   photos.push(new PhotoBall(loadImage("assets/barbara2.jpg"), "Barbara #2", 90, 130, "barbara2.html"));
   photos.push(new PhotoBall(loadImage("assets/sherrie levine.jpg"), "Sherrie Levine", 80, 110, "sherrie levine.html"));
-  photos.push(new PhotoBall(loadImage("assets/wangguangyi2.jpg"), "Wang Guangyi", 130, 80, "wangguangyi.html"));
+  photos.push(new PhotoBall(loadImage("assets/wangguangyi1.jpg"), "Wang Guangyi", 130, 80, "wangguangyi.html"));
   photos.push(new PhotoBall(loadImage("assets/jeff koons.jpg"), "Jeff Koons", 155, 90, "jeff koons.html"));
 }
 
@@ -98,18 +98,17 @@ class PhotoBall {
 
     this.x = 0;
     this.y = 0;
-    this.vx = random(-4, 4);
-    this.vy = random(-4, 4);
+    this.vx = random(-5, 5);
+    this.vy = random(-5, 5);
 
     
     this.alpha = 255;
     this.fadeSpeed = 0.35; 
 
-    // scale 呼吸
     this.scaleT = random(1000);
     this.scaleSpeed = 0.06; 
     this.scaleMin = 0.85;
-    this.scaleMax = 1.25;
+    this.scaleMax = 2;
   }
 
   initPosition() {
@@ -145,7 +144,7 @@ class PhotoBall {
 
     
     if (hit && !backgroundDead) {
-      bg = max(0, bg - 6); 
+      bg = max(0, bg - 1); 
       if (bg <= 0) {
         bg = 0;
         backgroundDead = true;
