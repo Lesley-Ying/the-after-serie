@@ -22,7 +22,7 @@
   
   <script>
 let photos = [];
-let bg = 255;                    
+let bg = 0;                    
 let backgroundDead = false;     
 let trailAlpha = 40;             
 
@@ -63,7 +63,7 @@ function mousePressed() {
   for (let p of photos) {
     if (p.isClicked(mouseX, mouseY)) {
       
-      bg = 255;
+      bg = 0;
       backgroundDead = false;
 
       
@@ -144,7 +144,7 @@ class PhotoBall {
 
     
     if (hit && !backgroundDead) {
-      bg = max(0, bg - 1); 
+      bg = max(0, bg + 1); 
       if (bg <= 0) {
         bg = 0;
         backgroundDead = true;
